@@ -23,7 +23,7 @@ class Player
 
     # coordinates validation
     def coord(board_size)
-        puts "Enter coordinates (column,row): "
+        puts "\nEnter coordinates (column,row): "
         pos = gets
         # valid column
         if 0 < pos[2].to_i and pos[2].to_i < board_size + 1
@@ -41,7 +41,6 @@ class Player
 
     # player setup
     def player_setup(board_size, ship_count)
-        puts "player setup"
         # define boards
         @Attack_board = board(board_size)
         @Location_board = board(board_size)
@@ -133,13 +132,21 @@ def board(size)
     return board
 end
 
+# 'clear' terminal
+def clear_terminal()
+    for i in 0..100
+        puts " "
+    end
+end
+
 # game play
 def game(ship_count, board_size)
     player1_hit = 0
     player2_hit = 0
     while true do
         # player 1 turn
-        puts "\n\n\n\n\nPlayer 1"
+        clear_terminal()
+        puts "Player 1"
         Player2.Location_board, hit = Player1.turn(Player2.Location_board, board_size)
         # if player1 hit player2
         if hit
@@ -150,7 +157,8 @@ def game(ship_count, board_size)
             end
         end
         # player 2 turn
-        puts "\n\n\n\n\nPlayer 2"
+        clear_terminal()
+        puts "Player 2"
         Player1.Location_board, hit = Player2.turn(Player1.Location_board, board_size)
         # if player2 hit player1
         if hit
@@ -200,8 +208,12 @@ end
 
 # run start
 board_size, ship_count = game_settings()
+clear_terminal()
+puts "Player 1"
 Player1 = Player.new
 Player1.player_setup(board_size, ship_count)
+clear_terminal()
+puts "Player 2"
 Player2 = Player.new
 Player2.player_setup(board_size, ship_count)
 
