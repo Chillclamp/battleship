@@ -1,17 +1,12 @@
 # class for board methods
 class Board
     # make variable avalible outside of class
-    attr_accessor :Attack_board
-    attr_accessor :Location_board
+    attr_accessor :attack_board
+    attr_accessor :location_board
     attr_accessor :board_size_given
     attr_accessor :board
     attr_accessor :ship_amoumt_given
     attr_accessor :ship_amoumt_max
-
-    # initalise
-    def initalise()
-
-    end
 
     # get board size
     def board_size()
@@ -40,18 +35,18 @@ class Board
         row = []
         board = []
         # first row indexing
-        for column_num in 0..self.board_size_given
+        (0..self.board_size_given).each do |column_num|
             row.append(column_num)
             row.append(' ')
         end
         board.append(row)
         # other rows
-        for row_num in 0..self.board_size_given - 1
+        (0..self.board_size_given - 1).each do |row_num|
             row = []
             # first column indexing
             row.append(row_num + 1)
             # other columns
-            for column in 0..self.board_size_given - 1
+            (0..self.board_size_given - 1).each do |column|
                 row.append(' ')
                 row.append('-')
             end
@@ -62,7 +57,7 @@ class Board
 
     # calculate max ship amount
     def ship_max()
-        @ship_amoumt_max = (((self.board_size_given ** 2) / 2.5).round()).to_i
+        @ship_amoumt_max = (((self.board_size_given ** 2) / 1.5).round()).to_i
         if self.ship_amoumt_max < 1
             self.ship_amoumt_max = 1
         end 
@@ -77,6 +72,7 @@ class Board
     # validate ship amount
     def ship_amount_validation()
         begin
+            # change ship_amoumt_given to integer in method
             self.ship_amoumt_given = self.ship_amoumt_given.to_i
             if self.ship_amoumt_given <= self.ship_amoumt_max
                 return []
@@ -96,58 +92,45 @@ class Board
 
     # validate coordinates
     def coordinates_validation(coordinates)
-        error = []
         begin
-            # valid column
-            if 1 <= coordinates[2].to_i and coordinates[2].to_i <= self.board_size_given
-                # valid row
-                if 1 <= coordinates[0].to_i and coordinates[0].to_i <= self.board_size_given
-                    # valid square
-                    return error, coordinates
-                else
-                    # invalid column
-                    error.append("Invalid column")
-                end
-            else
-                # invalid row
-                error.append("Invalid row")
-            end
+          column = coordinates[0].to_i
+          row = coordinates[2].to_i
+          if (1..board_size_given).include?(column) && (1..board_size_given).include?(row)
+            return [], coordinates
+          else
+            return ["Invalid column"] unless (1..board_size_given).include?(column)
+            return ["Invalid row"] unless (1..board_size_given).include?(row)
+          end
         rescue
-            error.append("Invalid input")
+          return "Invalid input"
         end
-        return error, coordinates
     end
 end
 
 # class for player methods
 class Player
     # make variable avalible outside of class
-    attr_accessor :Attack_board
-    attr_accessor :Location_board
+    attr_accessor :attack_board
+    attr_accessor :location_board
     attr_accessor :ship_hits
 
     # initiate player
     def initalise()
         # define player boards
-        @Attack_board = Game_board.board_creation() 
-        @Location_board = Game_board.board_creation() 
+        @attack_board = Game_board.board_creation() 
+        @location_board = Game_board.board_creation() 
         @ship_hits = 0
     end
 end
 
 # class for game methods
 class Game
-    # initiate 'object'
-    def initalise()
-
-    end
-
     # ship placement - validate
     def ship_placement(player, coordinates)
         # validate space
-        if player.Location_board[coordinates[2].to_i][(coordinates[0].to_i * 2) ] == '-'  
+        if player.location_board[coordinates[2].to_i][(coordinates[0].to_i * 2) ] == '-'  
             # write possition to board
-            player.Location_board[coordinates[2].to_i][(coordinates[0].to_i * 2) ] = 'O'  
+            player.location_board[coordinates[2].to_i][(coordinates[0].to_i * 2) ] = 'O'  
             return []
         else
             return ["invalid location"]
@@ -157,17 +140,19 @@ class Game
     # ship attack
     def attack(player, opponent, coordinates)
         # miss
-        if opponent.Location_board[coordinates[2].to_i][(coordinates[0].to_i * 2) ] == '-'  
+        row = coordinates[2].to_i
+        column = coordinates[0].to_i * 2
+        if opponent.location_board[row][column] == '-'  
             # write miss to board
-            opponent.Location_board[coordinates[2].to_i][(coordinates[0].to_i * 2) ] = '/'  
-            player.Attack_board[coordinates[2].to_i][(coordinates[0].to_i * 2) ] = '/'  
+            opponent.location_board[row][column] = '/'  
+            player.attack_board[row][column] = '/'  
             # error
             return []
         # hit
-        elsif opponent.Location_board[coordinates[2].to_i][(coordinates[0].to_i * 2) ] == 'O'  
+        elsif opponent.location_board[row][column] == 'O'  
             # write hit to board
-            opponent.Location_board[coordinates[2].to_i][(coordinates[0].to_i * 2) ] = 'X'  
-            player.Attack_board[coordinates[2].to_i][(coordinates[0].to_i * 2) ] = 'X'
+            opponent.location_board[row][column] = 'X'  
+            player.attack_board[row][column] = 'X'
             player.ship_hits += 1 
             # error
             return []
@@ -177,134 +162,132 @@ class Game
         end 
     end
 end
-    
 
-# other methods
-# 'clear' terminal
-def clear_terminal(player_num)
-    for loops in 0..100
-        puts " "
+
+# main game controler
+class Battleships
+    # other methods
+    # 'clear' terminal
+    def clear_terminal()
+        (0..100).each do 
+            puts " "
+        end
+        puts "Player #{self.player_num}"
+        puts "Enter to continue"
+        gets
     end
-    puts "Player #{player_num}"
-    puts "Enter to continue"
-    gets
-end
 
-# display board
-def display_board(board)
-    for row in board
-        puts row.join
+    # display board
+    def display_board(board)
+        board.each do |row|
+            puts row.join
+        end
     end
-end
 
-# player ships
-def player_ships(player)
-    # place ships - OPTIMISE
-    for ship in 1..Game_board.ship_amoumt_given
+    # process for place player ships
+    def player_ships(player)
+        # place ships
+        (1..Game_board.ship_amoumt_given).each do |ship|
+            while true
+                (0..5).each do 
+                    puts " "
+                end
+                Board.display_board(player.location_board)
+                coordinates = Game_board.coordinates_input()
+                error, coordinates = Game_board.coordinates_validation(coordinates)
+                if error.length == 0
+                    break
+                end
+                puts error
+            end
+            Game.ship_placement(player, coordinates)
+        end
+    end
+
+    # player turn
+    def player_turn(player, opponent)
+        clear_terminal()
         while true
-            for space in 0..5
-                puts " "
+            while true
+                # get coordinates
+                puts "Location board"
+                Board.display_board(player.location_board)
+                puts "Attack board"
+                Board.display_board(player.attack_board)
+                coordinates = Game_board.coordinates_input()
+                error, coordinates = Game_board.coordinates_validation(coordinates)
+                break if error.empty
+                puts error
             end
-            display_board(player.Location_board)
-            coordinates = Game_board.coordinates_input()
-            error, coordinates = Game_board.coordinates_validation(coordinates)
-            if error.length == 0
-                break
-            end
+
+            # attack board
+            error = Game.attack(player, opponent, coordinates)
+            break if error.empty
+        end
+    end
+
+    ### PROCESS ###
+    Game_board = Board.new
+    Game = Game.new
+
+    # get board size
+    def board_setup()
+        while true
+            Game_board.board_size()
+            error = Game_board.board_size_validation()
+            break if error.empty 
             puts error
         end
-        Game.ship_placement(player, coordinates)
     end
-end
 
-# player turn
-def player_turn(player, opponent, player_num)
-    clear_terminal(player_num)
+    # get ship amount
+    def ship_amount_setup()
+        Game_board.ship_max()
+        while true
+            Game_board.ship_amount()
+            error = Game_board.ship_amount_validation()
+            if error.length == 0 
+                break
+            else 
+                puts error
+            end
+        end
+    end
+
+    def player_setup()
+        # player 1
+        clear_terminal()
+        Player = Player.new
+        Player.initalise()
+        player_ships(Player)
+        return player
+    end
+
+    # game play
+    # loop until win - DO SOMETHING WITH THIS
     while true
-        while true
-            # get coordinates
-            puts "Location board"
-            display_board(player.Location_board)
-            puts "Attack board"
-            display_board(player.Attack_board)
-            coordinates = Game_board.coordinates_input()
-            error, coordinates = Game_board.coordinates_validation(coordinates)
-            if error.length == 0
-                break
-            end
-            puts error
+        # player 1 turn
+        self.player_num = 1
+        player_turn(Player1, Player2)
+
+        # if won
+        if Player1.ship_hits == Game_board.ship_amoumt_given
+            puts "\n\n\nplayer 1 won\n"
+            break
         end
 
-        # attack board
-        error = Game.attack(player, opponent, coordinates)
-        if error.length == 0
+        # player 2 turn
+        self.player_num = 2
+        player_turn(Player2, Player1)
+
+        # if won
+        if Player2.ship_hits == Game_board.ship_amoumt_given
+            puts "\n\n\nplayer 2 won\n"
             break
         end
     end
-end
 
-### PROCESS ###
-Game_board = Board.new
-Game = Game.new
-# get board size
-while true
-    Game_board.board_size()
-    error = Game_board.board_size_validation()
-    if error.length == 0 
-        break
-    else 
-        puts error
-    end
-end
-
-# get ship amount
-Game_board.ship_max()
-while true
-    Game_board.ship_amount()
-    error = Game_board.ship_amount_validation()
-    if error.length == 0 
-        break
-    else 
-        puts error
-    end
-end
-
-# player 1
-clear_terminal(1)
-Player1 = Player.new
-Player1.initalise()
-player_ships(Player1)
-
-# player 2
-clear_terminal(2)
-Player2 = Player.new
-Player2.initalise()
-player_ships(Player2)
-
-
-# game play
-# loop until win
-while true
-    # player 1 turn
-    player_turn(Player1, Player2, 1)
-
-    # if won
-    if Player1.ship_hits == Game_board.ship_amoumt_given
-        puts "\n\n\nplayer 1 won"
-        break
-    end
-
-    # player 2 turn
-    player_turn(Player2, Player1, 2)
-
-    # if won
-    if Player2.ship_hits == Game_board.ship_amoumt_given
-        puts "\n\n\nplayer 2 won"
-        break
-    end
-end
-
-# display both board at end
-for rows in 0..Player1.Location_board.length - 1
-    puts "#{Player1.Location_board[rows].join}           #{Player2.Location_board[rows].join}"
+    # display both board at end
+    (0..Player1.location_board.length - 1).each do |rows|
+        puts "#{Player1.location_board[rows].join}           #{Player2.location_board[rows].join}"
 end
