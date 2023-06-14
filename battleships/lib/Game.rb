@@ -15,7 +15,7 @@ class Game
     def attack(player, opponent, coordinates)
         row, column = parse_coordinates(coordinates)
     
-        if valid_attack?(opponent.location_board, row, column)
+        if valid_attack(opponent.location_board, row, column)
             hit = opponent.location_board[row][column] == 'O'
             update_board(opponent.location_board, coordinates, hit ? 'X' : '/')
             update_board(player.attack_board, coordinates, hit ? 'X' : '/')
@@ -27,15 +27,8 @@ class Game
     end
     
     private
-
-    # Check if the location on the board is valid
-    def valid_location?(board, coordinates)
-        row, column = parse_coordinates(coordinates)
-        board[row][column] == '-'
-    end
-
     # Check if the attack location is valid
-    def valid_attack?(board, row, column)
+    def valid_attack(board, row, column)
         board[row][column] == '-' || board[row][column] == 'O'
     end
 
