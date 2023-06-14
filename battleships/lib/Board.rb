@@ -16,18 +16,16 @@ class Board
 
     # validate board size 
     def board_size_validation()
-        error = []
         begin
-            if 2 <= self.board_size_given.to_i and self.board_size_given.to_i <= 9
+            if (2..9).include?(self.board_size_given.to_i)
                 self.board_size_given = self.board_size_given.to_i
-                return error
+                return []
             else
-                error.append("Invalid board size")
+                return "Invalid board size"
             end
         rescue
-            error.append("Invalid input")
+            return "Invalid input"
         end
-        return error
     end
 
     # board creation
@@ -93,16 +91,16 @@ class Board
     # validate coordinates
     def coordinates_validation(coordinates)
         begin
-          column = coordinates[0].to_i
-          row = coordinates[2].to_i
-          if (1..board_size_given).include?(column) && (1..board_size_given).include?(row)
-            return [], coordinates
-          else
-            return ["Invalid column"] unless (1..board_size_given).include?(column)
-            return ["Invalid row"] unless (1..board_size_given).include?(row)
-          end
+            column = coordinates[0].to_i
+            row = coordinates[2].to_i
+            if (1..board_size_given).include?(column) && (1..board_size_given).include?(row)
+                return [], coordinates
+            else
+                return ["Invalid column"] unless (1..board_size_given).include?(column)
+                return ["Invalid row"] unless (1..board_size_given).include?(row)
+            end
         rescue
-          return "Invalid input"
+            return "Invalid input"
         end
     end
 end

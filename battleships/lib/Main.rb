@@ -1,6 +1,6 @@
-require File.expand_path('Board.rb', __dir__)
-require File.expand_path('Game.rb', __dir__)
-require File.expand_path('Battleships.rb', __dir__)
+require_relative 'Board'
+require_relative 'Game'
+require_relative 'Battleships'
 
 # setup
 Board = Board.new

@@ -12,28 +12,43 @@ class Game
         end
     end
 
-    # ship attack
     def attack(player, opponent, coordinates)
-        # miss
+        row, column = parse_coordinates(coordinates)
+    
+        if valid_attack?(opponent.location_board, row, column)
+            hit = opponent.location_board[row][column] == 'O'
+            update_board(opponent.location_board, coordinates, hit ? 'X' : '/')
+            update_board(player.attack_board, coordinates, hit ? 'X' : '/')
+            player.ship_hits += 1 if hit
+            []
+        else
+            ['Invalid location']
+        end
+    end
+    
+    private
+
+    # Check if the location on the board is valid
+    def valid_location?(board, coordinates)
+        row, column = parse_coordinates(coordinates)
+        board[row][column] == '-'
+    end
+
+    # Check if the attack location is valid
+    def valid_attack?(board, row, column)
+        board[row][column] == '-' || board[row][column] == 'O'
+    end
+
+    # Update the board with the given value at the specified coordinates
+    def update_board(board, coordinates, value)
+        row, column = parse_coordinates(coordinates)
+        board[row][column] = value
+    end
+
+    # Parse the coordinates into row and column indices
+    def parse_coordinates(coordinates)
         row = coordinates[2].to_i
         column = coordinates[0].to_i * 2
-        if opponent.location_board[row][column] == '-'  
-            # write miss to board
-            opponent.location_board[row][column] = '/'  
-            player.attack_board[row][column] = '/'  
-            # error
-            return []
-        # hit
-        elsif opponent.location_board[row][column] == 'O'  
-            # write hit to board
-            opponent.location_board[row][column] = 'X'  
-            player.attack_board[row][column] = 'X'
-            player.ship_hits += 1 
-            # error
-            return []
-        else
-            # error
-            return ["Invalid location"]
-        end 
+        [row, column]
     end
 end

@@ -1,6 +1,6 @@
-require File.expand_path('Board.rb', __dir__)
-require File.expand_path('Game.rb', __dir__)
-require File.expand_path('Player.rb', __dir__)
+require_relative 'Board'
+require_relative 'Game'
+require_relative 'Player'
 
 # main game controler
 class Battleships
@@ -18,13 +18,6 @@ class Battleships
         puts "Player #{self.current_player}"
         puts "Enter to continue"
         gets
-    end
-
-    # display board
-    def display_board(board)
-        board.each do |row|
-            puts row.join
-        end
     end
 
     # get board size
@@ -48,17 +41,6 @@ class Battleships
         end
     end
 
-    # player initalise
-    def player_initalise(player_num)
-        player = Player.new
-        player.initalise()
-        player.player_num = player_num
-        self.current_player = player.player_num
-        Battleships.clear_terminal()
-        Battleships.player_ships(player)
-        return player
-    end
-
     # process for place player ships
     def player_ships(player)
         # place ships
@@ -77,6 +59,17 @@ class Battleships
             end
             Game.ship_placement(player, coordinates)
         end
+    end
+
+    # player initalise
+    def player_initalise(player_num)
+        player = Player.new
+        player.initalise()
+        player.player_num = player_num
+        self.current_player = player.player_num
+        Battleships.clear_terminal()
+        Battleships.player_ships(player)
+        return player
     end
 
     # player turn
@@ -98,6 +91,13 @@ class Battleships
             # attack board
             error = Game.attack(player, opponent, coordinates)
             break if error.empty?
+        end
+    end
+    
+    # display board
+    def display_board(board)
+        board.each do |row|
+            puts row.join
         end
     end
 end 

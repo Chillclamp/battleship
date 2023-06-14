@@ -1,4 +1,4 @@
-require File.expand_path('Board.rb', __dir__)
+require_relative 'Board'
 
 # class for player methods
 class Player
