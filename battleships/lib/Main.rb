@@ -2,20 +2,6 @@ require_relative 'Board'
 require_relative 'Game'
 require_relative 'Battleships'
 
-# setup
-Board = Board.new
-Game = Game.new
-Battleships = Battleships.new
-Battleships.initalise()
-
-# game settings
-Battleships.board_setup()
-Battleships.ship_amount_setup()
-
-# initalise players
-Player1 = Battleships.player_initalise(1)
-Player2 = Battleships.player_initalise(2)
-players = [Player1, Player2]
 
 # game play
 while true
